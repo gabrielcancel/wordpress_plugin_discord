@@ -6,6 +6,8 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     restart: always
+    networks:
+      - wpserve
     environment:
       MYSQL_ROOT_PASSWORD: somewordpress
       MYSQL_DATABASE: wordpress
@@ -20,12 +22,36 @@ services:
       - ./wordpress_data:/var/www/html
     ports:
       - "8000:80"
+    networks:
+      - wpserve
     restart: always
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+  
+  server:
+    depends_on:
+      - wordpress
+    image: python:3-alpine
+    volumes:
+      - ./server:/server/
+    networks:
+      - wpserve
+    command: >
+      ash -c "
+      python3 -m ensurepip &&
+      pip3 install fastapi hypercorn textblob &&
+      mkdir -p server &&
+      cd server &&
+      hypercorn main:app -b 'localhost:80'
+      "
+
+
 volumes:
   db_data: {}
   wordpress_data: {}
+  
+networks:
+  wpserve:
