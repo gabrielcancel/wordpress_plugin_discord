@@ -8,7 +8,7 @@ Version: 1.0
 
 add_action( 'admin_menu', 'dp_add_admin_menu' );
 add_action( 'admin_init', 'dp_settings_init' );
-add_action('comment_post', 'dp_send_autorized_message');
+add_action('comment_post', 'dp_send_autorized_message', 10, 2);
 
 
 
@@ -104,8 +104,18 @@ function dp_send_message($message, $webhook) {
 }
 
 function dp_send_autorized_message($id, $is_admin) {
+	$comment = get_comment($id);
+	$link = "http://server:8000/analysis/" . $comment->comment_content;
+	$ch = curl_init($link);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$result = curl_exec($ch);
+
+	var_dump($link, $result);
+	curl_close($ch);
     if (!$is_admin) {
-        $comment = get_comment($id);
         dp_send_message($comment, get_option('dp_settings')['dp_api_key']);
     } 
 }
