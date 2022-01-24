@@ -105,14 +105,11 @@ function dp_send_message($message, $webhook) {
 
 function dp_send_autorized_message($id, $is_admin) {
 	$comment = get_comment($id);
-	$link = "http://localhost:8000/analysis/" . $comment->comment_content;
-	$ch = curl_init($link);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_HEADER, 0);
-	$result = curl_exec($ch);
-
-	var_dump($link, $result);
-	curl_close($ch);
+	$content = $comment->comment_content;
+	
+	$output = passthru("python3 ../../../../main.py $content");
+	var_dump($output);
+	
     if (!$is_admin) {
         dp_send_message($comment, get_option('dp_settings')['dp_api_key']);
     } 
