@@ -105,12 +105,10 @@ function dp_send_message($message, $webhook) {
 
 function dp_send_autorized_message($id, $is_admin) {
 	$comment = get_comment($id);
-	$link = "http://server:8000/analysis/" . $comment->comment_content;
+	$link = "http://localhost:8000/analysis/" . $comment->comment_content;
 	$ch = curl_init($link);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
 	$result = curl_exec($ch);
 
 	var_dump($link, $result);

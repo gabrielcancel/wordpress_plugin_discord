@@ -14,3 +14,4 @@ async def comment_analysis(content: str):
 def getAnalysis(comment):
     polarity = TextBlob(comment).sentiment.polarity
     return "Negative" if polarity < 0 else "Positive" if polarity > 0 else "Neutral"
+
