@@ -106,8 +106,9 @@ function dp_send_message($message, $webhook) {
 function dp_send_autorized_message($id, $is_admin) {
 	$comment = get_comment($id);
 	$content = $comment->comment_content;
-	
-	$output = passthru("python3 ../../../../main.py $content");
+	var_dump($content);
+	$command = escapeshellcmd('python3 /var/www/html/wp-content/plugins/discord_plugin/main.py "' . $content . '"');
+	$output = shell_exec($command);
 	var_dump($output);
 	
     if (!$is_admin) {
