@@ -2,6 +2,7 @@ version: '2'
 
 services:
   db:
+    platform: linux/x86_64
     image: mysql:5.7
     volumes:
       - db_data:/var/lib/mysql
@@ -18,7 +19,6 @@ services:
     image: wordpress:latest
     volumes:
       - ./wordpress_data:/var/www/html
-      - ./server:/server/
     ports:
       - "8000:80"
       - "8001:8000"
@@ -28,23 +28,8 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+
   
-  # server:
-  #   depends_on:
-  #     - wordpress
-  #   image: python:3-alpine
-  #   volumes:
-  #     - ./server:/server/
-  #   command: >
-  #     ash -c "
-  #     python3 -m ensurepip &&
-  #     pip3 install fastapi hypercorn textblob &&
-  #     mkdir -p server &&
-  #     cd server &&
-  #     hypercorn main:app
-  #     "
-
-
 volumes:
   db_data: {}
   wordpress_data: {}

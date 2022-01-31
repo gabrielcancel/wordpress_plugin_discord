@@ -75,18 +75,29 @@ function dp_options_page(  ) {
 
 }
 
-function dp_send_message($message, $webhook) {
+function dp_send_message($message, $webhook, $level) {
     $timestamp = date("c", strtotime("now"));
+	$color = "";
+
+	if ($level == 3) {
+		$color = "#FF0000";
+	} elseif ($level == 2) {
+		$color = "#FFA600";
+	} elseif ($level == 1 ) {
+		$color = "#FFDC00";
+	} else {
+		$color = "#3EFF00";		
+	};
 
     $data = json_encode([
         
         'tts' => false,
         'embeds' => [[
             'title' => "New Comment on the web-site",
-            #'type' => "rich",
+            //'type' => "rich",
             'description' => $message->comment_content,
             'timestamp' => $timestamp,
-            'color' => hexdec( "3366ff" ),
+            'color' => hexdec($color),
             
         ]]
     ]);
@@ -106,12 +117,24 @@ function dp_send_message($message, $webhook) {
 function dp_send_autorized_message($id, $is_admin) {
 	$comment = get_comment($id);
 	$content = $comment->comment_content;
-	var_dump($content);
 	$command = escapeshellcmd('python3 /var/www/html/wp-content/plugins/discord_plugin/main.py "' . $content . '"');
 	$output = shell_exec($command);
-	var_dump($output);
+	$level = comment_analyze($output);
 	
     if (!$is_admin) {
-        dp_send_message($comment, get_option('dp_settings')['dp_api_key']);
+        dp_send_message($comment, get_option('dp_settings')['dp_api_key'],$level);
     } 
+}
+
+
+function comment_analyze($content) {
+	if($content < -0.5) {
+		return 3;
+	} else if ($content < -0.3) {
+		return 2;
+	} else if ($content < 0) {
+		return 1;
+	} else {
+		return 0;
+	}
 }
