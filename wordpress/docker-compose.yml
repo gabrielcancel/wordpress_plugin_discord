@@ -4,6 +4,7 @@ services:
   db:
     platform: linux/x86_64
     image: mysql:5.7
+    container_name: db
     volumes:
       - db_data:/var/lib/mysql
     restart: always
@@ -17,18 +18,19 @@ services:
     depends_on:
       - db
     image: wordpress:latest
+    container_name: wordpress
     volumes:
       - ./wordpress_data:/var/www/html
     ports:
       - "8000:80"
       - "8001:8000"
-    restart: always
+    restart: "no"
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
-
+    #command: sh -c "chmod u+x /var/www/html/wp-content/plugins/discord_plugin/config.sh && /var/www/html/wp-content/plugins/discord_plugin/config.sh"
   
 volumes:
   db_data: {}
